@@ -1,0 +1,84 @@
+.container {
+	/* overflow: scroll; */
+	display: flex;
+	gap: 10px;
+	height: 650px;
+	max-width: 2000px;
+	width: 100%;
+	border-radius: 20px;
+}
+
+.tools-board {
+	min-height: 150px;
+	height: 150px;
+	border-radius: 20px;
+	background-color: #f8f7f6;
+	padding: 5px 22px 0;
+}
+
+.row .options {
+	list-style: none;
+	margin: 10px 0 0 5px;
+}
+
+.row .options .option {
+	display: flex;
+	cursor: pointer;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.tools-board .row {
+	margin-bottom: 20px;
+}
+
+.option:is(:hover, .active) img {
+	filter: grayscale(20%);
+}
+
+.option :where(span, label) {
+	color: black;
+	cursor: pointer;
+	padding-left: 10px;
+}
+
+.option:is(:hover, .active) :where(span, label) {
+	color: #f4130b;
+}
+
+.buttons button {
+	width: 80%;
+	color: #fff;
+	border: none;
+	outline: none;
+	font-size: 0.9rem;
+	padding: 3px 0;
+	margin-bottom: 13px;
+	background: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.buttons .clear-canvas {
+	color: black;
+	border: 1px solid #9fc39f;
+	transition: all 0.2s ease;
+	border: 2px solid black;
+	font-size: 13px;
+}
+
+.clear-canvas:hover {
+	color: #fff;
+	background: #6c757d;
+}
+
+.drawing-board {
+	flex: 1;
+}
+
+.drawing-board canvas {
+	width: 100%;
+	min-width: 650px;
+	height: 150px;
+	border-radius: 10px;
+}
