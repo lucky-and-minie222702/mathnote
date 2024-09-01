@@ -2,33 +2,37 @@
 	/* overflow: scroll; */
 	display: flex;
 	gap: 10px;
-	height: 650px;
-	max-width: 2000px;
-	width: 100%;
+	margin: 30px;
 	border-radius: 20px;
+}
+.title {
+	text-align: center;
+	font-size: 20px;
 }
 
 .tools-board {
-	min-height: 150px;
-	height: 150px;
+	top: 0;
+	position: sticky;
+	max-height: 70px;
+	min-height: 70px;
 	border-radius: 20px;
 	background-color: #f8f7f6;
 	padding: 5px 22px 0;
 }
 
-.row .options {
+.options {
 	list-style: none;
 	margin: 10px 0 0 5px;
 }
 
-.row .options .option {
+.options .option {
 	display: flex;
 	cursor: pointer;
 	align-items: center;
 	margin-bottom: 10px;
 }
 
-.tools-board .row {
+.tools-board {
 	margin-bottom: 20px;
 }
 
@@ -59,6 +63,17 @@
 	cursor: pointer;
 }
 
+.drawing-board {
+	flex: 1;
+}
+
+.drawing-board canvas {
+	width: 100%;
+	min-width: 1000px;
+	height: 150px;
+	border-radius: 10px;
+}
+
 .buttons .clear-canvas {
 	color: black;
 	border: 1px solid #9fc39f;
@@ -72,13 +87,6 @@
 	background: #6c757d;
 }
 
-.drawing-board {
-	flex: 1;
-}
-
-.drawing-board canvas {
-	width: 100%;
-	min-width: 650px;
-	height: 150px;
-	border-radius: 10px;
+.clear-canvas {
+	max-height: 30px;
 }

@@ -1,8 +1,12 @@
-import Singlenote from "./components/singlenote/singlenote.js";
+import UI from "./components/ui.js";
+import { Helmet } from "react-helmet";
 
 function App() {
 	return (
 		<div className="App">
+			<Helmet>
+				<title>Simple math note</title>
+			</Helmet>
 			<link
 				rel="stylesheet"
 				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
@@ -10,7 +14,9 @@ function App() {
 				crossOrigin="anonymous"
 				referrerPolicy="no-referrer"
 			/>
-			<Singlenote />
+			<div>
+				<UI />
+			</div>
 		</div>
 	);
 }

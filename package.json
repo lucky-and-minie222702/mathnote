@@ -8,8 +8,11 @@
     "@testing-library/user-event": "^14.5.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-handwriting-recognition": "github:mathieuancelin/react-handwriting-recognition",
     "react-helmet": "^6.1.0",
     "react-inline-script": "^1.2.0",
+    "react-native": "^0.75.2",
+    "react-native-text-recognition": "^1.1.1",
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.3"
   },
