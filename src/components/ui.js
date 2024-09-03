@@ -7,6 +7,7 @@ export default class UI extends React.Component {
 		super(props);
 		this.state = {
 			canvases: [1],
+			active: 1,
 		};
 	}
 
@@ -17,6 +18,7 @@ export default class UI extends React.Component {
 				canvases: this.state.canvases.concat([
 					this.state.canvases[this.state.canvases.length - 1] + 1,
 				]),
+				active: this.state.canvases.length + 1,
 			},
 			() => {
 				console.log(this.state);
@@ -31,9 +33,20 @@ export default class UI extends React.Component {
 				<div>
 					{this.state.canvases.map((id) => (
 						<div>
-							<Singlenote noteID={id} />{" "}
+							<Singlenote
+								noteID={id}
+								disabled={
+									id === this.state.active ? false : true
+								}
+								onActive={(e) => this.setState({ active: e })}
+							/>
 						</div>
 					))}
+					<div style={{ width: "75vw", margin: "auto" }}>
+						<Button onClick={(e) => this.addCanvas()}>
+							Add note
+						</Button>
+					</div>
 				</div>
 			</div>
 		);

@@ -2,7 +2,7 @@ import React from "react";
 import "../style.css";
 import Button from "react-bootstrap/Button";
 import { Editor } from "iink-ts";
-import { ComputeEngine } from "https://unpkg.com/@cortex-js/compute-engine?module";
+// import { ComputeEngine } from "https://unpkg.com/@cortex-js/compute-engine?module";
 
 class Singlenote extends React.Component {
 	constructor(props) {
@@ -10,6 +10,7 @@ class Singlenote extends React.Component {
 	}
 
 	loadLib() {
+		// const ce = new ComputeEngine();
 		const editorElement = document.getElementById(
 			"editor" + this.props.noteID.toString()
 		);
@@ -22,30 +23,27 @@ class Singlenote extends React.Component {
 		const redoElement = document.getElementById(
 			"redo" + this.props.noteID.toString()
 		);
-
-		function cleanLatex(latexExport) {
-			console.log("latexExport: ", latexExport);
-			if (typeof latexExport === "number") {
-				latexExport = latexExport.toString();
-			}
-			if (latexExport.includes("\\\\")) {
-				const steps = "\\begin{align*}" + latexExport + "\\end{align*}";
-				return steps
-					.replace("\\begin{aligned}", "")
-					.replace("\\end{aligned}", "")
-					.replace(new RegExp("(align.{1})", "g"), "aligned");
-			}
-			return latexExport.replace(
-				new RegExp("(align.{1})", "g"),
-				"aligned"
-			);
-		}
+		const wrapperElement = document.getElementById(
+			"wrapper" + this.props.noteID.toString()
+		);
 
 		let editor;
 
 		async function loadEditor() {
+			var isShowRes = false;
 			const options = {
+				theme: {
+					ink: {
+						color: "#484848",
+						"-myscript-pen-width": 2,
+					},
+				},
 				configuration: {
+					rendering: {
+						smartGuide: {
+							enable: false,
+						},
+					},
 					server: {
 						protocol: "WEBSOCKET",
 						applicationKey: "3650153f-8a51-4f13-9c57-8bec175d8464",
@@ -61,7 +59,6 @@ class Singlenote extends React.Component {
 			};
 
 			editor = new Editor(editorElement, options);
-
 			await editor.initialize();
 
 			editor.events.addEventListener("changed", (event) => {
@@ -71,18 +68,28 @@ class Singlenote extends React.Component {
 			});
 
 			editor.events.addEventListener("exported", (evt) => {
+				isShowRes = false;
 				const exports = evt.detail;
 				if (exports && exports["application/x-latex"]) {
-					// exports["application/x-latex"];
+					let cmd;
+					cmd = exports["application/x-latex"];
+					console.log(cmd);
+					if (
+						exports["application/x-latex"][
+							exports["application/x-latex"].length - 1
+						] == "="
+					) {
+						console.log("Show result");
+						editor.convert();
+						isShowRes = true;
+					}
 				}
-				// else if (exports && exports["application/mathml+xml"]) {
-				// 	resultElement.innerText = exports["application/mathml+xml"];
-				// } else if (exports && exports["application/mathofficeXML"]) {
-				// 	resultElement.innerText =
-				// 		exports["application/mathofficeXML"];
-				// } else {
-				// 	resultElement.innerHTML = "";
-				// }
+			});
+
+			wrapperElement.addEventListener("onmousedown", () => {
+				if (isShowRes) {
+					editor.clear();
+				}
 			});
 
 			clearElement.addEventListener("click", async () => {
@@ -113,35 +120,45 @@ class Singlenote extends React.Component {
 		return (
 			<div>
 				<div
-					id={"editor" + this.props.noteID.toString()}
-					className="editor"
-					touch-action="none"
-				></div>
-				<div className="tool-bar">
-					<Button
-						style={{ width: "100%" }}
-						id={"clear" + this.props.noteID.toString()}
-						class="nav-btn btn-fab-mini btn-lightBlue"
-						disabled
-					>
-						clear
-					</Button>
-					<Button
-						style={{ width: "100%" }}
-						id={"undo" + this.props.noteID.toString()}
-						class="nav-btn btn-fab-mini btn-lightBlue"
-						disabled
-					>
-						undo
-					</Button>
-					<Button
-						style={{ width: "100%" }}
-						id={"redo" + this.props.noteID.toString()}
-						class="nav-btn btn-fab-mini btn-lightBlue"
-						disabled
-					>
-						redo
-					</Button>
+					id={"wrapper" + this.props.noteID.toString()}
+					className={
+						this.props.disabled ? "disabled wrapper" : "wrapper"
+					}
+				>
+					<div
+						id={"editor" + this.props.noteID.toString()}
+						className="editor"
+						touch-action="none"
+					></div>
+				</div>
+				<div style={{ display: "flex", "justify-content": "center" }}>
+					{this.props.disabled ? (
+						<div></div>
+					) : (
+						<div className="tool-bar" style={{ width: "75vw" }}>
+							<Button
+								style={{ width: "100%" }}
+								id={"clear" + this.props.noteID.toString()}
+								disabled
+							>
+								clear
+							</Button>
+							<Button
+								style={{ width: "100%" }}
+								id={"undo" + this.props.noteID.toString()}
+								disabled
+							>
+								undo
+							</Button>
+							<Button
+								style={{ width: "100%" }}
+								id={"redo" + this.props.noteID.toString()}
+								disabled
+							>
+								redo
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		);
