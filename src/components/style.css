@@ -1,0 +1,15 @@
+.editor {
+	background-color: #f7f1e3;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	min-width: 750px;
+	min-height: 250px;
+	width: 1000px;
+	height: 300px;
+}
+
+.tool-bar {
+	justify-content: space-evenly;
+	display: flex;
+	gap: 20px;
+	margin: 10px;
+}

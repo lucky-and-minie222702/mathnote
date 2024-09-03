@@ -1,6 +1,6 @@
 import React from "react";
 import Singlenote from "./singlenote/singlenote.js";
-import Toolbar from "./controller/toolbar.js";
+import Button from "react-bootstrap/Button";
 
 export default class UI extends React.Component {
 	constructor(props) {
@@ -28,20 +28,10 @@ export default class UI extends React.Component {
 	render() {
 		return (
 			<div>
-				<button
-					style={{ position: "sticky", top: "110px" }}
-					onClick={(e) => this.addCanvas()}
-				>
-					Add note
-				</button>
-				<Toolbar />
 				<div>
 					{this.state.canvases.map((id) => (
-						<div style={{ display: "flex" }}>
-							<button style={{ margin: "auto" }}>
-								Delete note
-							</button>
-							<Singlenote canvasId={id} />{" "}
+						<div>
+							<Singlenote noteID={id} />{" "}
 						</div>
 					))}
 				</div>

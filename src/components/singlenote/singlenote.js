@@ -1,122 +1,147 @@
 import React from "react";
-import "./style.css";
-import { HandwritingInput } from "react-handwriting-recognition";
+import "../style.css";
+import Button from "react-bootstrap/Button";
+import { Editor } from "iink-ts";
+import { ComputeEngine } from "https://unpkg.com/@cortex-js/compute-engine?module";
 
 class Singlenote extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			img: [],
-		};
+	}
+
+	loadLib() {
+		const editorElement = document.getElementById(
+			"editor" + this.props.noteID.toString()
+		);
+		const clearElement = document.getElementById(
+			"clear" + this.props.noteID.toString()
+		);
+		const undoElement = document.getElementById(
+			"undo" + this.props.noteID.toString()
+		);
+		const redoElement = document.getElementById(
+			"redo" + this.props.noteID.toString()
+		);
+
+		function cleanLatex(latexExport) {
+			console.log("latexExport: ", latexExport);
+			if (typeof latexExport === "number") {
+				latexExport = latexExport.toString();
+			}
+			if (latexExport.includes("\\\\")) {
+				const steps = "\\begin{align*}" + latexExport + "\\end{align*}";
+				return steps
+					.replace("\\begin{aligned}", "")
+					.replace("\\end{aligned}", "")
+					.replace(new RegExp("(align.{1})", "g"), "aligned");
+			}
+			return latexExport.replace(
+				new RegExp("(align.{1})", "g"),
+				"aligned"
+			);
+		}
+
+		let editor;
+
+		async function loadEditor() {
+			const options = {
+				configuration: {
+					server: {
+						protocol: "WEBSOCKET",
+						applicationKey: "3650153f-8a51-4f13-9c57-8bec175d8464",
+						hmacKey: "47cef1f3-3535-4d33-b0d3-f0714effd852",
+					},
+					recognition: {
+						type: "MATH",
+						math: {
+							mimeTypes: ["application/x-latex"],
+						},
+					},
+				},
+			};
+
+			editor = new Editor(editorElement, options);
+
+			await editor.initialize();
+
+			editor.events.addEventListener("changed", (event) => {
+				undoElement.disabled = !event.detail.canUndo;
+				redoElement.disabled = !event.detail.canRedo;
+				clearElement.disabled = !event.detail.canClear;
+			});
+
+			editor.events.addEventListener("exported", (evt) => {
+				const exports = evt.detail;
+				if (exports && exports["application/x-latex"]) {
+					// exports["application/x-latex"];
+				}
+				// else if (exports && exports["application/mathml+xml"]) {
+				// 	resultElement.innerText = exports["application/mathml+xml"];
+				// } else if (exports && exports["application/mathofficeXML"]) {
+				// 	resultElement.innerText =
+				// 		exports["application/mathofficeXML"];
+				// } else {
+				// 	resultElement.innerHTML = "";
+				// }
+			});
+
+			clearElement.addEventListener("click", async () => {
+				editor.clear();
+			});
+
+			undoElement.addEventListener("click", () => {
+				editor.undo();
+			});
+
+			redoElement.addEventListener("click", () => {
+				editor.redo();
+			});
+
+			window.addEventListener("resize", () => {
+				editor.resize();
+			});
+		}
+
+		loadEditor().catch((error) => console.error(error));
 	}
 
 	componentDidMount() {
-		const canvas = document.querySelector(
-				"#canvas" + this.props.canvasId.toString()
-			),
-			ctx = canvas.getContext("2d"),
-			clearCanvas = document.querySelector(
-				"#clear-canvas" + this.props.canvasId.toString()
-			),
-			toolBtns = document.querySelectorAll(".tool");
-
-		let snapshot,
-			isDrawing = false,
-			selectedTool = "brush",
-			brushWidth = 3,
-			selectedColor = "#000";
-
-		const setCanvasBackground = () => {
-			ctx.fillStyle = "#fff";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = selectedColor;
-		};
-
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
-		setCanvasBackground();
-
-		const startDraw = (e) => {
-			isDrawing = true;
-			ctx.beginPath();
-			ctx.lineWidth = brushWidth;
-			ctx.strokeStyle = selectedColor;
-			ctx.fillStyle = selectedColor;
-			snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		};
-
-		const drawPencil = (e) => {
-			ctx.lineTo(e.offsetX, e.offsetY);
-			ctx.stroke();
-		};
-
-		const drawing = (e) => {
-			if (!isDrawing) return;
-			ctx.putImageData(snapshot, 0, 0);
-
-			if (
-				(selectedTool === "brush" && selectedTool === "pencil") ||
-				selectedTool === "eraser"
-			) {
-				ctx.strokeStyle =
-					selectedTool === "eraser" ? "#fff" : selectedColor;
-				if (selectedTool === "eraser") {
-					brushWidth = 50;
-				} else {
-					brushWidth = 3;
-				}
-				ctx.lineWidth = brushWidth;
-				ctx.lineTo(e.offsetX, e.offsetY);
-				ctx.stroke();
-			} else {
-				if (selectedTool === "eraser") {
-					brushWidth = 50;
-				} else {
-					brushWidth = 3;
-				}
-				ctx.lineWidth = brushWidth;
-				drawPencil(e);
-			}
-		};
-		clearCanvas.addEventListener("click", () => {
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			setCanvasBackground();
-		});
-
-		toolBtns.forEach((btn) => {
-			btn.addEventListener("click", () => {
-				document
-					.querySelector(".option .active")
-					.classList.remove("active");
-				btn.classList.add("active");
-				selectedTool = btn.id;
-				console.log(selectedTool);
-			});
-		});
-
-		canvas.addEventListener("mousedown", startDraw);
-		canvas.addEventListener("mousemove", drawing);
-		canvas.addEventListener("mouseup", () => (isDrawing = false));
-
-		// setInterval(async () => {
-		// 	const result = await TextRecognition.recognize(canvas.toDataURL());
-		// }, 3000);
+		this.loadLib();
 	}
+
 	render() {
 		return (
-			<div style={{ gap: "0px" }}>
-				<div className="container">
-					<section className="drawing-board">
-						<canvas
-							id={"canvas" + this.props.canvasId.toString()}
-						></canvas>
-					</section>
-					<button
-						id={"clear-canvas" + this.props.canvasId.toString()}
-						// className="clear-canvas"
+			<div>
+				<div
+					id={"editor" + this.props.noteID.toString()}
+					className="editor"
+					touch-action="none"
+				></div>
+				<div className="tool-bar">
+					<Button
+						style={{ width: "100%" }}
+						id={"clear" + this.props.noteID.toString()}
+						class="nav-btn btn-fab-mini btn-lightBlue"
+						disabled
 					>
-						Clear note
-					</button>
+						clear
+					</Button>
+					<Button
+						style={{ width: "100%" }}
+						id={"undo" + this.props.noteID.toString()}
+						class="nav-btn btn-fab-mini btn-lightBlue"
+						disabled
+					>
+						undo
+					</Button>
+					<Button
+						style={{ width: "100%" }}
+						id={"redo" + this.props.noteID.toString()}
+						class="nav-btn btn-fab-mini btn-lightBlue"
+						disabled
+					>
+						redo
+					</Button>
 				</div>
 			</div>
 		);

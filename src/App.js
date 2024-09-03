@@ -5,15 +5,16 @@ function App() {
 	return (
 		<div className="App">
 			<Helmet>
+				<link
+					rel="stylesheet"
+					href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+					integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X"
+					crossorigin="anonymous"
+				/>
+				<script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 				<title>Simple math note</title>
+				<style>{"body{ background-color:#f5f6fa }"}</style>
 			</Helmet>
-			<link
-				rel="stylesheet"
-				href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-				integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
-				crossOrigin="anonymous"
-				referrerPolicy="no-referrer"
-			/>
 			<div>
 				<UI />
 			</div>
